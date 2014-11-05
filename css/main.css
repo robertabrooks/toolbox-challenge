@@ -12,8 +12,8 @@ body {
 }
 
 #gameBoard img {
-    width: 12%;
-    height: 12%;
+    width: 18%;
+    height: 18%;
     padding: 3px;
     box-sizing: border-box;
 }
