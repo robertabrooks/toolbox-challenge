@@ -19,14 +19,19 @@ $(document).ready(function() {
         });
     }  // for each tile
 
+    var resetInterval = null;
     $('#startGame').click(function() {
-        var failedAttempts = 0;
+        gameBoard.empty();
+        if (clearInterval) {
+            window.clearInterval(resetInterval);
+        }
+        clicks = 0;
+        matches = 0;
         var remain = 8;
         $('#elapsed-seconds').text("Time: " + elapsedSeconds);
         $('#matches').text("Matches: " + matches);
         $('#remain').text("Remaining: " + (8 - matches));
-        $('#failedAttempts').text("Attempts: " + (clicks % 2 - matches));
-
+        $('#failedAttempts').text("Attempts: " + (clicks - matches));
         tiles = _.shuffle(tiles);
         var toUse = tiles.slice(0, 8);
         var pairs = [];
@@ -34,7 +39,6 @@ $(document).ready(function() {
             pairs.push(tile);
             pairs.push(_.clone(tile));
         });
-
         pairs = _.shuffle(pairs);
         var row = $(document.createElement('div'));
         _.forEach(pairs, function(tile, elemIndex) {
@@ -51,21 +55,23 @@ $(document).ready(function() {
             row.append(img);
         });
         gameBoard.append(row);
-
         var seconds = Date.now();
-        window.setInterval(function() {
+        resetInterval = window.setInterval(function() {
             elapsedSeconds = (Date.now() - seconds) / 1000;
             elapsedSeconds = Math.floor(elapsedSeconds);
-            $('#elapsed-seconds').text(elapsedSeconds + ' seconds');
+            var minutes = Math.floor(elapsedSeconds / 60);
+            elapsedSeconds = elapsedSeconds % 60;
+            if (elapsedSeconds < 10) {
+                elapsedSeconds = "0" + elapsedSeconds;
+            }
+            $('#elapsed-seconds').text('Time: ' + minutes + ':' + elapsedSeconds);
         }, 1000);
 
         var firstClick= null;
         $('#gameBoard img').click(function() {
-            clicks++;
             var clickedImg = $(this);
             var tile = clickedImg.data('tile');
             flipTile(tile, clickedImg);
-
             if (firstClick != null) {
                 tile1 = firstClick.data('tile');
                 if (tile.src !== tile1.src) {
@@ -82,15 +88,15 @@ $(document).ready(function() {
                     tile1.matched = true;
                     firstClick = null;
                 }
-                failedAttempts++;
+                clicks++;
             }
             else {
                 firstClick = clickedImg;
             }
-            update(pairs, matches, remain, failedAttempts);
+            update(pairs, matches, remain, clicks);
             $('#matches').text("Matches: " + matches);
             $('#remain').text("Remaining: " + (8 - matches));
-            $('#failedAttempts').text("Failures: " + (clicks / 2 - matches));
+            $('#failedAttempts').text("Attempts: " + (clicks - matches));
         });
     });
 });
@@ -109,13 +115,13 @@ function flipTile(tile, img) {
 
 function update(pairs, matched, unmatched, attempts) {
     $('#attempts').text(attempts);
-    $('#matched').text(matched);
-    $('#unmatched').text(unmatched);
-    var won = true;
+    $('#matches').text(matched);
+    $('#remain').text(unmatched);
+    var win = true;
     _.forEach(pairs, function(tile, elemIndex) {
-        won = tile.matched && won;
+        win = tile.matched && win;
     });
-    if (won) {
-        window.alert('Congratulations! You Won!');
+    if (win) {
+        window.alert('YOU WON!');
     }
 }

@@ -3,22 +3,17 @@
     <head lang="en:">
         <meta charset="UTF-8">
         <title>Memory!</title>
-        <link rel="stylesheet" href="css/bootstrap.css"/>
         <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
         <main class="container">
-            <div id="header">
+            <header>
                 <h1>Memory!</h1>
-                <p>How to play: This game is a memory game where the object of the game is to match two of the same images
-                by clicking on the tiles. You will need to remember where the tiles are in order to correctly match them.
-                Once you click the start game button below, the time will begin. Click on a tile and it will flip over.
-                If you click on two tiles that match, they will remain flipped over. Enjoy!</p>
                 <p><button id="startGame">Start New Game!</button></p>
-            </div>
+            </header>
 
             <section class="row">
-                <div class="col-sm-8" id="game-board"></div>
+                <div class="col-sm-8" id="gameBoard"></div>
                 <div class="col-sm-3">
                     <p id="elapsed-seconds"></p>
                     <p id="matches"></p>
@@ -26,12 +21,20 @@
                     <p id="failedAttempts"></p>
                 </div>
             </section>
+
+            <section class="row" id="description">
+                <p>How to play: This game is a memory game where the object of the game is to match two of the same images
+                by clicking on the tiles. You will need to remember where the tiles are in order to correctly match them.
+                Once you click the start game button below, the time will begin. Click on a tile and it will flip over.
+                If you click on two tiles that match, they will remain flipped over. Enjoy!</p>
+            </section>
+
         </main>
-        <div id="gameBoard"></div>
+
 
         <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap.js"></script>
         <script src="js/app.js"></script>
     </body>
 </html>
