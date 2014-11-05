@@ -1,6 +1,23 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu);
+
+body {
+    background-color: #b3fafa;
+    font-size: 15px;
+    font-family: 'Ubuntu', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+#startGame {
+    margin-top: 0;
+    margin-left: 5%;
+}
+
 #gameBoard img {
-    width: 25%;
-    height: 25%;
-    padding: 5px;
+    width: 19%;
+    height: 19%;
+    padding: 3px;
     box-sizing: border-box;
 }
+
+
+
+

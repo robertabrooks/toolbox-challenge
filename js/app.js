@@ -1,21 +1,32 @@
-// app.js main java script file
 
 "use strict";
 
-var tiles = [];
-var i = 0;
-for (i = 1; i <= 32; i++) {
-    tiles.push({
-        tileNum: i,
-        src: 'img/tile' + i + '.jpg',
-        flipped: false,
-        matched: false
-    });
-} // for each tile
-
 // when document is ready
 $(document).ready(function() {
+    var gameBoard = $('#gameBoard');
+    var clicks = 0;
+    var elapsedSeconds = 0;
+    var matches = 0;
+    var img;
+    var tile1;
+    var tiles = [];
+    for (var i = 1; i <= 32; i++) {
+        tiles.push({
+            tileNum: i,
+            src: 'img/tile' + i + '.jpg',
+            flipped: false,
+            matched: false
+        });
+    }  // for each tile
+
     $('#startGame').click(function() {
+        var failedAttempts = 0;
+        var remain = 8;
+        $('#elapsed-seconds').text("Time: " + elapsedSeconds);
+        $('#matches').text("Matches: " + matches);
+        $('#remain').text("Remaining: " + (8 - matches));
+        $('#failedAttempts').text("Attempts: " + (clicks % 2 - matches));
+
         tiles = _.shuffle(tiles);
         var toUse = tiles.slice(0, 8);
         var pairs = [];
@@ -23,9 +34,8 @@ $(document).ready(function() {
             pairs.push(tile);
             pairs.push(_.clone(tile));
         });
+
         pairs = _.shuffle(pairs);
-        var gameBoard = $('#gameBoard');
-        var img;
         var row = $(document.createElement('div'));
         _.forEach(pairs, function(tile, elemIndex) {
             if (elemIndex > 0 && elemIndex % 4 == 0) {
@@ -44,17 +54,44 @@ $(document).ready(function() {
 
         var seconds = Date.now();
         window.setInterval(function() {
-            var elapsedSeconds = (Date.now() - seconds) / 1000;
+            elapsedSeconds = (Date.now() - seconds) / 1000;
             elapsedSeconds = Math.floor(elapsedSeconds);
             $('#elapsed-seconds').text(elapsedSeconds + ' seconds');
         }, 1000);
 
+        var firstClick= null;
         $('#gameBoard img').click(function() {
+            clicks++;
             var clickedImg = $(this);
             var tile = clickedImg.data('tile');
             flipTile(tile, clickedImg);
-        });
 
+            if (firstClick != null) {
+                tile1 = firstClick.data('tile');
+                if (tile.src !== tile1.src) {
+                    setTimeout(function() {
+                        flipTile(tile, clickedImg);
+                        flipTile(tile1, firstClick);
+                        firstClick = null;
+                    }, 1000);
+                }
+                else {
+                    matches++;
+                    remain--;
+                    tile.matched = true;
+                    tile1.matched = true;
+                    firstClick = null;
+                }
+                failedAttempts++;
+            }
+            else {
+                firstClick = clickedImg;
+            }
+            update(pairs, matches, remain, failedAttempts);
+            $('#matches').text("Matches: " + matches);
+            $('#remain').text("Remaining: " + (8 - matches));
+            $('#failedAttempts').text("Failures: " + (clicks / 2 - matches));
+        });
     });
 });
 
@@ -68,4 +105,17 @@ function flipTile(tile, img) {
         tile.flipped = !tile.flipped;
         img.fadeIn(100);
     });
+}
+
+function update(pairs, matched, unmatched, attempts) {
+    $('#attempts').text(attempts);
+    $('#matched').text(matched);
+    $('#unmatched').text(unmatched);
+    var won = true;
+    _.forEach(pairs, function(tile, elemIndex) {
+        won = tile.matched && won;
+    });
+    if (won) {
+        window.alert('Congratulations! You Won!');
+    }
 }
